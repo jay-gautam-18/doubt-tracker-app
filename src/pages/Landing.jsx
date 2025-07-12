@@ -22,6 +22,12 @@ const Landing = () => {
         >
           Login as Mentor
         </button>
+        <button
+          onClick={() => navigate('/register')}
+          className="w-full mt-4 py-3 rounded-xl bg-leaf text-white font-semibold text-lg shadow hover:bg-leafdark transition"
+        >
+          Register as New User
+        </button>
       </div>
     </div>
   );
