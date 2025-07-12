@@ -24,7 +24,7 @@ const Landing = () => {
         </button>
         <button
           onClick={() => navigate('/register')}
-          className="w-full mt-4 py-3 rounded-xl bg-leaf text-white font-semibold text-lg shadow hover:bg-leafdark transition"
+          className="w-full mt-4 py-3 rounded-xl bg-leaf  text-black border border-black font-semibold text-lg shadow hover:bg-leafdark transition"
         >
           Register as New User
         </button>
