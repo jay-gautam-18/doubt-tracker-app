@@ -11,11 +11,13 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('student');
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFieldErrors({}); // Clear previous errors
     try {
       const res = await api.post('/auth/register', { name, email, password, role });
       // Immediately log in the user after registration
@@ -24,12 +26,21 @@ const Register = () => {
       toast.success('Registration successful! Redirecting to dashboard...');
       setTimeout(() => navigate('/dashboard'), 1000);
     } catch (err) {
-      console.log('Registration error:', err.response?.data);
-  toast.error(
-    err.response?.data?.message ||
-    err.response?.data?.errors?.[0]?.msg ||
-    'Registration failed'
-  );
+      // Check for validation errors from backend
+      const errors = err.response?.data?.errors;
+      if (Array.isArray(errors)) {
+        // Map errors to fields
+        const newFieldErrors = {};
+        errors.forEach(error => {
+          newFieldErrors[error.path] = error.msg;
+        });
+        setFieldErrors(newFieldErrors);
+      } else {
+        toast.error(
+          err.response?.data?.message ||
+          'Registration failed'
+        );
+      }
     }
   };
 
@@ -42,14 +53,17 @@ const Register = () => {
           <div className="relative">
             <FaUser className="absolute left-3 top-3 text-leaf" />
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Full Name" required className="w-full pl-10 border rounded-xl px-3 py-2 bg-leaflight text-leaf focus:outline-none focus:ring-2 focus:ring-accent" />
+            {fieldErrors.name && <div className="text-red-500 text-xs mt-1 ml-1">{fieldErrors.name}</div>}
           </div>
           <div className="relative">
             <FaEnvelope className="absolute left-3 top-3 text-leaf" />
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email" required className="w-full pl-10 border rounded-xl px-3 py-2 bg-leaflight text-leaf focus:outline-none focus:ring-2 focus:ring-accent" />
+            {fieldErrors.email && <div className="text-red-500 text-xs mt-1 ml-1">{fieldErrors.email}</div>}
           </div>
           <div className="relative">
             <FaLock className="absolute left-3 top-3 text-leaf" />
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" required className="w-full pl-10 border rounded-xl px-3 py-2 bg-leaflight text-leaf focus:outline-none focus:ring-2 focus:ring-accent" />
+            {fieldErrors.password && <div className="text-red-500 text-xs mt-1 ml-1">{fieldErrors.password}</div>}
           </div>
           <div className="relative">
             <select value={role} onChange={e => setRole(e.target.value)} className="w-full border rounded-xl px-3 py-2 text-leaf appearance-none focus:outline-none focus:ring-2 focus:ring-accent pr-10">
@@ -57,6 +71,7 @@ const Register = () => {
               <option value="mentor">Mentor</option>
             </select>
             <FaChevronDown className="pointer-events-none absolute right-4 top-1/2 transform -translate-y-1/2 text-leaf text-lg" />
+            {fieldErrors.role && <div className="text-red-500 text-xs mt-1 ml-1">{fieldErrors.role}</div>}
           </div>
           <button type="submit" className="w-full bg-black text-white py-3 rounded-xl font-semibold text-lg shadow hover:bg-accent transition">Register</button>
         </form>
