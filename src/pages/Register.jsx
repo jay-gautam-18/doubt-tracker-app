@@ -24,7 +24,12 @@ const Register = () => {
       toast.success('Registration successful! Redirecting to dashboard...');
       setTimeout(() => navigate('/dashboard'), 1000);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      console.log('Registration error:', err.response?.data);
+  toast.error(
+    err.response?.data?.message ||
+    err.response?.data?.errors?.[0]?.msg ||
+    'Registration failed'
+  );
     }
   };
 
